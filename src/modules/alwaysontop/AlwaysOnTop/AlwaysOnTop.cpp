@@ -28,9 +28,7 @@ bool TransWindow(HWND window, unsigned char opacity)
         initi = true;
     }
     if (pSetLayeredWindowAttributes == NULL)
-    {
         return false;
-    }
 
     SetLastError(NULL);
 

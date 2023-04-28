@@ -1,0 +1,13 @@
+{
+  "ID": "9F1B49201C3F4BF781CAAD5CD88EA4DX",
+  "ActionKeyword": "??",
+  "IsGlobal": true,
+  "Name": "VS Solution Search",
+  "Author": "erkanio",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "https://aka.ms/powertoys",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.VSSolutionSearch.dll",
+  "IcoPathDark": "Images\\setting_icon.png",
+  "IcoPathLight": "Images\\setting_icon.png"
+}
