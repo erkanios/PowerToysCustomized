@@ -12,6 +12,37 @@
 
 #include <trace.h>
 #include <WinHookEventIDs.h>
+#include <iostream>
+#include <Windows.h>
+using namespace std;
+
+typedef DWORD(WINAPI* PSLWA)(HWND, DWORD, BYTE, DWORD);
+static PSLWA pSetLayeredWindowAttributes = NULL;
+static bool initi = false;
+bool TransWindow(HWND window, unsigned char opacity)
+{
+    if (initi == NULL)
+    {
+        HMODULE dynmall = LoadLibrary(L"user32");
+        pSetLayeredWindowAttributes = reinterpret_cast<PSLWA>(GetProcAddress(dynmall, "SetLayeredWindowAttributes"));
+        initi = true;
+    }
+    if (pSetLayeredWindowAttributes == NULL)
+    {
+        return false;
+    }
+
+    SetLastError(NULL);
+
+    SetWindowLong(window, GWL_EXSTYLE, GetWindowLong(window, GWL_EXSTYLE) | WS_EX_LAYERED);
+
+
+    if (GetLastError())
+        return false;
+
+    return pSetLayeredWindowAttributes(window, RGB(245, 245, 245), opacity, LWA_COLORKEY | LWA_ALPHA);
+}
+
 
 
 namespace NonLocalizable
@@ -387,6 +418,7 @@ bool AlwaysOnTop::PinTopmostWindow(HWND window) const noexcept
     }
 
     auto res = SetWindowPos(window, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    TransWindow(window, 190);
     if (!res)
     {
         Logger::error(L"Failed to pin window, {}", get_last_error_or_default(GetLastError()));
@@ -399,6 +431,7 @@ bool AlwaysOnTop::UnpinTopmostWindow(HWND window) const noexcept
 {
     RemoveProp(window, NonLocalizable::WINDOW_IS_PINNED_PROP);
     auto res = SetWindowPos(window, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    TransWindow(window, 255);
     if (!res)
     {
         Logger::error(L"Failed to unpin window, {}", get_last_error_or_default(GetLastError()));
